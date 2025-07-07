@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Adjuster</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background-color: #fffaf0;
+    }
+    h1 {
+      color: #4b0082;
+    }
+    input, button {
+      padding: 0.5rem;
+      margin: 0.5rem;
+      font-size: 1rem;
+    }
+    .response {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+    }
+    .ingredient {
+      margin-bottom: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🥘 Recipe Adjuster</h1>
+  <input id="recipeName" placeholder="Enter Recipe Name" />
+  <input id="servings" type="number" placeholder="No. of Servings" />
+  <button onclick="adjustRecipe()">Adjust Ingredients</button>
+
+  <div class="response" id="responseBox" style="display:none">
+    <h3 id="recipeTitle"></h3>
+    <p><strong>Cooking Time:</strong> <span id="timeInfo"></span></p>
+    <h4>Adjusted Ingredients:</h4>
+    <div id="ingredients"></div>
+  </div>
+
+  <script>
+    async function adjustRecipe() {
+      const recipe = document.getElementById("recipeName").value.trim();
+      const servings = document.getElementById("servings").value.trim();
+      const responseBox = document.getElementById("responseBox");
+
+      if (!recipe || !servings) {
+        alert("Please enter both recipe name and number of servings.");
+        return;
+      }
+
+      const url = "https://your-flask-api-url.onrender.com/adjust_ingredients"; // <-- replace with your real backend
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer abc123securetoken" // <-- same key as backend
+          },
+          body: JSON.stringify({ recipe_name: recipe, servings: servings })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Unknown error");
+
+        // Populate the UI
+        responseBox.style.display = "block";
+        document.getElementById("recipeTitle").innerText = `${data.recipe} (for ${data.new_servings} servings)`;
+        document.getElementById("timeInfo").innerText = `${data.original_time} ➡ ${data.adjusted_time}`;
+
+        const ing = document.getElementById("ingredients");
+        ing.innerHTML = "";
+        data.ingredients.forEach(i => {
+          ing.innerHTML += `<div class="ingredient">- ${i.formattedAmount} ${i.unit} ${i.name}</div>`;
+        });
+      } catch (err) {
+        alert("❌ " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
