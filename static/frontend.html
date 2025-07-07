@@ -57,16 +57,14 @@
         return;
       }
 
-      // const url = "https://your-flask-api-url.onrender.com/adjust_ingredients"; // <-- replace with your real backend
       const url = "https://recipe-ai-backend.onrender.com/adjust_ingredients";
-
 
       try {
         const res = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer abc123securetoken" // <-- same key as backend
+            "Authorization": "Bearer abc123securetoken"
           },
           body: JSON.stringify({ recipe_name: recipe, servings: servings })
         });
@@ -74,7 +72,6 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Unknown error");
 
-        // Populate the UI
         responseBox.style.display = "block";
         document.getElementById("recipeTitle").innerText = `${data.recipe} (for ${data.new_servings} servings)`;
         document.getElementById("timeInfo").innerText = `${data.original_time} ➡ ${data.adjusted_time}`;
