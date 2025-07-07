@@ -2,7 +2,8 @@ Flask==2.3.3
 openpyxl==3.1.2
 numpy==2.0.0
 gunicorn==21.2.0
-pandas==2.2.2  # Updated to a newer version
+pandas==2.2.2
 setuptools>=70.0.0
 build>=1.2.1
 wheel>=0.43.0
+cython>=3.0.0  # Added to ensure compatible Cython version
